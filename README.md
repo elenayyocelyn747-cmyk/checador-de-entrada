@@ -1,0 +1,1 @@
+# checador-de-entrada
