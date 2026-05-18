@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # checador_app
 
 A new Flutter project.
@@ -15,3 +16,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# checador-de-entrada
+>>>>>>> 4586c45f15c064c704ae26c899d3a7c5522da6b0
