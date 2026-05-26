@@ -38,8 +38,9 @@ class _DownloadInfoScreenState extends State<DownloadInfoScreen> {
   Future<void> _loadAttendance(String group) async {
     final data = await supabase
         .from('attendance')
-        .select('students(name, group_name), status, timestamp')
-        .eq('students.group_name', group);
+        .select('student_id, status, timestamp, students(name, group_name)')
+        .filter('students.group_name', 'eq', group)
+        .order('timestamp', ascending: false);
 
     setState(() {
       attendance = List<Map<String, dynamic>>.from(data);
@@ -57,6 +58,15 @@ class _DownloadInfoScreenState extends State<DownloadInfoScreen> {
             spacing: 8,
             children: groups.map((g) {
               return ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white, // 👈 texto blanco
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
                 onPressed: () => _loadAttendance(g),
                 child: Text('Grupo $g'),
               );
@@ -64,20 +74,46 @@ class _DownloadInfoScreenState extends State<DownloadInfoScreen> {
           ),
           const Divider(),
           Expanded(
-            child: ListView.builder(
-              itemCount: attendance.length,
-              itemBuilder: (context, index) {
-                final item = attendance[index];
-                return ListTile(
-                  title: Text(item['students']['name']),
-                  subtitle: Text(
-                    'Grupo: ${item['students']['group_name']} | '
-                    'Estado: ${item['status']} | '
-                    'Fecha: ${item['timestamp']}',
+            child: attendance.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Sin datos',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: attendance.length,
+                    itemBuilder: (context, index) {
+                      final item = attendance[index];
+                      final student = item['students'];
+
+                      if (student == null) return const SizedBox.shrink();
+
+                      final name = student['name'];
+                      final groupName = student['group_name'];
+                      final status = item['status'];
+                      final timestamp = item['timestamp'];
+
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        child: ListTile(
+                          leading: const Icon(Icons.person, color: Colors.blue),
+                          title: Text(
+                            name,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          subtitle: Text(
+                            'Grupo: $groupName\nEstado: $status\nFecha: $timestamp',
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),

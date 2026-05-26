@@ -14,29 +14,60 @@ Future<void> main() async {
     url: 'https://iqjlvnsjihrpyhhtvqlw.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlxamx2bnNqaWhycHloaHR2cWx3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5NjQ5NTAsImV4cCI6MjA5MjU0MDk1MH0.xdK8e94EpTNuDm7YaXadrY8zTAgA1MXhxTOszo-EiAs',
   );
-  runApp(const ChecadorApp());
+
+  final session = Supabase.instance.client.auth.currentSession;
+
+  runApp(ChecadorApp(initialSession: session));
 }
 
 class ChecadorApp extends StatelessWidget {
-  const ChecadorApp({super.key});
+  final Session? initialSession;
+  const ChecadorApp({super.key, this.initialSession});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Checador Escolar',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      initialRoute: '/login',
+      theme: ThemeData(
+        primaryColor: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          primary: Colors.blue,
+          secondary: Colors.purple,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+            textStyle: const TextStyle(fontSize: 16),
+          ),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+          centerTitle: true,
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          filled: true,
+          fillColor: Colors.grey.shade100,
+          prefixIconColor: Colors.blue,
+        ),
+      ),
+      initialRoute: initialSession != null ? '/mainMenu' : '/login',
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/mainMenu': (context) => const MainMenuScreen(),
         '/scanQr': (context) => const ScanQrScreen(),
-        '/menu': (context) => const MainMenuScreen(),
         '/createStudent': (context) => const CreateStudentScreen(),
         '/downloadInfo': (context) => const DownloadInfoScreen(),
         '/searchStudent': (context) => const SearchStudentScreen(),
-
-
       },
     );
   }
